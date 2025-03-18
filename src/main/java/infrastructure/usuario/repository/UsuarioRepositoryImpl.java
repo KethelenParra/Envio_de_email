@@ -74,28 +74,6 @@ public class UsuarioRepositoryImpl extends BaseRepository implements UsuarioRepo
         }
     }
 
-    @Override
-    public boolean existsByservidorId(Long idServidor) {
-        String query = "SELECT COUNT(u) > 0 FROM Usuario u WHERE u.servidor.id = :idServidor";
-        return em.createQuery(query, Boolean.class)
-                .setParameter("idServidor", idServidor)
-                .getSingleResult();
-
-    }
-
-    @Override
-    public Usuario findByUsername(final String username) {
-        String query = "SELECT u FROM Usuario u WHERE u.username = :username";
-        UsuarioEntity entity = this.getEntityManager()
-                .createQuery(query, UsuarioEntity.class)
-                .setParameter("username", username)
-                .getResultStream()
-                .findFirst()
-                .orElse(null);
-
-        return entity != null ? this.mapper.toModel(entity) : null;
-    }
-
     private List<UsuarioResponseDTO> searchUsuarios(
             final Map<String, Object> filter,
             final int currentPage,

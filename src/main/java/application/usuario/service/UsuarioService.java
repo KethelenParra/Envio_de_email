@@ -12,10 +12,4 @@ public interface UsuarioService {
     UsuarioRequestDTO updateUsuario(Long id, UsuarioRequestDTO usuarioRequestDTO);
 
     void deleteUsuario(Long id);
-
-    Usuario findByUsernameAndSenha(String username, String senha);
-
-    Usuario findByUsername(String username);
-
-    Boolean validateCpf(String cpf);
 }

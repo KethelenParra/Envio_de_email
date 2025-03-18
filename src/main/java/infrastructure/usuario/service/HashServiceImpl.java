@@ -1,10 +1,11 @@
-package br.tc.tceto.gta.gtawebservice.infrastructure.usuario.service;
+package infrastructure.usuario.service;
 
-import br.tc.tceto.gta.gtawebservice.application.usuario.service.HashService;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+
+import application.usuario.service.HashService;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;

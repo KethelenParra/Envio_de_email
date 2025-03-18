@@ -15,7 +15,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 @Path("/usuario")
 @Produces(MediaType.APPLICATION_JSON)
@@ -48,12 +47,6 @@ public class UsuarioResource {
     @Path("/{id}")
     public UsuarioRequestDTO findUsuarioById(@PathParam("id") final Long id) {
         return this.usuarioMapper.toDTORequest(this.usuarioService.getUsuarioById(id));
-    }
-
-    @GET
-    @Path("/cpf/{cpf}")
-    public Response validateCpf(@PathParam("cpf") final String cpf) {
-        return Response.ok().entity(this.usuarioService.validateCpf(cpf)).build();
     }
 
 }
