@@ -4,10 +4,8 @@ import domain.usuario.model.Perfil;
 
 public enum PerfilEnum {
 
-    GERENTEADMINISTRADOR("A"),
     GERENTE("G"),
-    DESENVOLVEDOR("D"),
-    USUARIO("U");
+    DESENVOLVEDOR("D");
 
     private final String code;
 
@@ -35,5 +33,4 @@ public enum PerfilEnum {
     public static PerfilEnum fromDomain(final Perfil perfil) {
         return fromCode(String.valueOf(perfil.getTipo()));
     }
-
 }

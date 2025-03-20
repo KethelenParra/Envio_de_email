@@ -1,12 +1,9 @@
 package application.usuario.mapper;
 
-import java.util.stream.Collectors;
-
 import domain.usuario.model.Usuario;
 import infrastructure.usuario.entity.PerfilEnum;
 import infrastructure.usuario.entity.UsuarioEntity;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class UsuarioEntityMapper {
@@ -16,7 +13,10 @@ public class UsuarioEntityMapper {
 
         entity.setId(model.getId());
         entity.setUsername(model.getUsername());
-        entity.setAtivo(model.isAtivo());
+        entity.setName(model.getName());
+        entity.setCpf(model.getCpf());
+        entity.setEmail(model.getEmail());
+        entity.setSenha(model.getSenha());
         entity.setPerfil(model.getPerfil() != null ? PerfilEnum.fromDomain(model.getPerfil()) : null);
 
         return entity;
@@ -27,10 +27,11 @@ public class UsuarioEntityMapper {
 
         usuario.setId(entity.getId());
         usuario.setUsername(entity.getUsername());
-        usuario.setAtivo(entity.isAtivo());
+        usuario.setName(entity.getName());
+        usuario.setCpf(entity.getCpf());
+        usuario.setEmail(entity.getEmail());
         usuario.setPerfil(entity.getPerfil() != null ? entity.getPerfil().toDomain() : null);
 
         return usuario;
     }
-
 }

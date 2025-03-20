@@ -2,10 +2,8 @@ package domain.usuario.model;
 
 public enum Perfil {
 
-    GERENTEADMINISTRADOR('A'),
     GERENTE('G'),
-    DESENVOLVEDOR('D'),
-    USUARIO('U');
+    DESENVOLVEDOR('D');
 
     private final char perfil;
 

@@ -11,11 +11,17 @@ public class UsuarioEntity extends DefaultEntity {
     @Column(name = "username", nullable = false)
     private String username;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "cpf", nullable = false)
+    private String cpf;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Column(name = "senha")
     private String senha;
-
-    @Column(name = "ativo", nullable = false)
-    private boolean ativo;
 
     @Convert(converter = PerfilEnumConverter.class)
     @Column(name = "perfil", nullable = false)
@@ -27,12 +33,16 @@ public class UsuarioEntity extends DefaultEntity {
     public UsuarioEntity(
             final String username,
             final String senha,
-            final boolean ativo,
+            final String name,
+            final String cpf,
+            final String email,
             final PerfilEnum perfil) {
 
         this.username = username;
         this.senha = senha;
-        this.ativo = ativo;
+        this.name = name;
+        this.cpf = cpf;
+        this.email = email;
         this.perfil = perfil;
     }
 
@@ -52,14 +62,6 @@ public class UsuarioEntity extends DefaultEntity {
         this.senha = senha;
     }
 
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(final boolean ativo) {
-        this.ativo = ativo;
-    }
-
     public PerfilEnum getPerfil() {
         return perfil;
     }
@@ -68,4 +70,27 @@ public class UsuarioEntity extends DefaultEntity {
         this.perfil = perfil;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

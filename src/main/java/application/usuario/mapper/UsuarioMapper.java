@@ -9,28 +9,32 @@ import infrastructure.usuario.dto.UsuarioResponseDTO;
 @ApplicationScoped
 public class UsuarioMapper {
 
-    public infrastructure.usuario.dto.UsuarioResponseDTO toResponseDTO(Usuario usuario) {
+    public UsuarioResponseDTO toResponseDTO(Usuario usuario) {
         return new UsuarioResponseDTO(
                 usuario.getId(),
-                usuario.isAtivo(),
+                usuario.getUsername(),
+                usuario.getName(),
+                usuario.getCpf(),
+                usuario.getEmail(),
                 usuario.getPerfil().getTipo());
     }
 
-    public Usuario toModel(
-            final UsuarioRequestDTO dto) {
+    public Usuario toModel(final UsuarioRequestDTO dto) {
         return new Usuario(
-                dto.id(),
                 dto.username(),
-                dto.isAtivo(),
+                dto.name(),
+                dto.cpf(),
+                dto.email(),
                 Perfil.fromChar(dto.perfil().charAt(0)));
     }
 
     public UsuarioRequestDTO toDTORequest(final Usuario model) {
         return new UsuarioRequestDTO(
-                model.getId(),
                 model.getUsername(),
-                model.isAtivo(),
-                String.valueOf(model.getPerfil().getTipo()));
+                model.getName(),
+                model.getCpf(),
+                model.getEmail(),
+                String.valueOf(model.getPerfil().getTipo()),
+                model.getSenha());
     }
-
 }

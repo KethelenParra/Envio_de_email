@@ -5,29 +5,22 @@ import domain.shared.Default;
 public class Usuario extends Default {
 
     private String username;
-
+    private String name;
+    private String cpf;
+    private String email;
     private String senha;
-
-    private boolean ativo;
-
     private Perfil perfil;
 
     public Usuario() {
     }
 
-    public Usuario(
-            final Long id,
-            final String username,
-            final boolean ativo,
+    public Usuario(final String username, final String name, final String cpf, final String email,
             final Perfil perfil) {
-        this.id = id;
         this.username = username;
-        this.ativo = ativo;
+        this.name = name;
+        this.cpf = cpf;
+        this.email = email;
         this.perfil = perfil;
-    }
-
-    public Usuario(final Long id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -46,14 +39,6 @@ public class Usuario extends Default {
         this.senha = senha;
     }
 
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(final boolean ativo) {
-        this.ativo = ativo;
-    }
-
     public Perfil getPerfil() {
         return perfil;
     }
@@ -62,4 +47,27 @@ public class Usuario extends Default {
         this.perfil = perfil;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

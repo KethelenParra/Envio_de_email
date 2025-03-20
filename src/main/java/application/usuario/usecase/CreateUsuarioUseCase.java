@@ -1,12 +1,11 @@
 package application.usuario.usecase;
 
-import java.util.List;
-
-import application.exception.FormValidationException;
 import application.usuario.mapper.UsuarioMapper;
+import application.usuario.service.HashService;
 import domain.usuario.model.Perfil;
 import domain.usuario.model.Usuario;
 import domain.usuario.repository.UsuarioRepository;
+import exception.FormValidationException;
 import infrastructure.usuario.dto.UsuarioRequestDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -16,29 +15,30 @@ import jakarta.transaction.Transactional;
 public class CreateUsuarioUseCase {
 
     private final UsuarioRepository usuarioRepository;
-
     private final UsuarioMapper usuarioMapper;
+    private final HashService hashService;
 
     @Inject
-    public CreateUsuarioUseCase(
-            final UsuarioRepository usuarioRepository,
-            final UsuarioMapper usuarioMapper) {
-
+    public CreateUsuarioUseCase(final UsuarioRepository usuarioRepository, final UsuarioMapper usuarioMapper,
+            final HashService hashService) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
+        this.hashService = hashService;
     }
 
     @Transactional
     public Long execute(final UsuarioRequestDTO usuarioRequestDTO) {
 
-        this.validateInsert(usuarioRequestDTO);
+        validateInsert(usuarioRequestDTO);
 
-        final Usuario usuario = this.usuarioMapper.toModel(
-                usuarioRequestDTO);
+        final Usuario usuario = this.usuarioMapper.toModel(usuarioRequestDTO);
 
-        if (usuario.getSenha() == null || usuario.getSenha().isEmpty()) {
-            usuario.setSenha(null);
-        }
+        usuario.setUsername(usuarioRequestDTO.username());
+        usuario.setName(usuarioRequestDTO.name());
+        usuario.setCpf(usuarioRequestDTO.cpf());
+        usuario.setEmail(usuarioRequestDTO.email());
+        usuario.setSenha(hashService.getHashSenha(usuarioRequestDTO.senha()));
+        usuario.setPerfil(Perfil.fromChar(usuarioRequestDTO.perfil().charAt(0)));
 
         this.usuarioRepository.save(usuario);
 
@@ -47,15 +47,13 @@ public class CreateUsuarioUseCase {
 
     private void validateInsert(final UsuarioRequestDTO usuarioRequestDTO) {
 
-        // Verifica se o perfil é válido
-        if (usuarioRequestDTO.perfil().length() != 1 || Perfil.fromChar(usuarioRequestDTO.perfil().charAt(0)) == null) {
+        if (usuarioRequestDTO.perfil().length() != 1) {
             throw new FormValidationException("O perfil informado é inválido.");
         }
-
-        // Verifica se o status ativo/inativo está coerente
-        if (!usuarioRequestDTO.isAtivo() && usuarioRequestDTO.perfil().charAt(0) == 'A') {
-            throw new FormValidationException("Usuários inativos não podem ter perfil de administrador.");
+        try {
+            Perfil.fromChar(usuarioRequestDTO.perfil().charAt(0));
+        } catch (IllegalArgumentException e) {
+            throw new FormValidationException("O perfil informado é inválido.");
         }
-
     }
 }

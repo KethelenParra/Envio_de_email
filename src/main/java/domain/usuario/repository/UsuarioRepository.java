@@ -13,4 +13,8 @@ public interface UsuarioRepository {
     void save(Usuario usuario);
 
     void deleteById(Long id);
+
+    Usuario findByUsername(String username);
+
+    Usuario findByUsernameAndSenha(String username, String senha);
 }
