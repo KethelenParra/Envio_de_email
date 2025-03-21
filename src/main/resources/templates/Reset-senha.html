@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Redefinição de Senha</title>
+    <style>
+        /* Estilos básicos para garantir boa exibição em clientes de e-mail */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007BFF;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #888888;
+        }
+
+        /* Ajustes responsivos (opcional) */
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+                padding: 10px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Redefinição de Senha</h1>
+
+        <p>Olá, <strong>{{nomeUsuario}}</strong>,</p>
+
+        <p>
+            Recebemos uma solicitação para redefinir a senha de sua conta. Se você não fez essa solicitação,
+            por favor, ignore este e-mail.
+        </p>
+        <p>
+            Caso contrário, para redefinir sua senha, clique no botão abaixo:
+        </p>
+
+        <p>
+            <a class="button"
+                href="{{linkRedefinicao}}">Redefinir Minha Senha</a>
+        </p>
+
+        <p>
+            O link de redefinição de senha expirará em <strong>{{tempoExpiracao}}</strong> minutos.
+        </p>
+
+        <p>
+            Se você tiver algum problema ou precisar de assistência adicional, não hesite em nos contatar.
+        </p>
+
+        <p>
+            Atenciosamente,<br>
+            Equipe GTA
+        </p>
+    </div>
+</body>
+
+</html>

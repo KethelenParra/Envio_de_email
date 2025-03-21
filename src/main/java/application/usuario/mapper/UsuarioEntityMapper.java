@@ -30,6 +30,7 @@ public class UsuarioEntityMapper {
         usuario.setName(entity.getName());
         usuario.setCpf(entity.getCpf());
         usuario.setEmail(entity.getEmail());
+        usuario.setSenha(entity.getSenha());
         usuario.setPerfil(entity.getPerfil() != null ? entity.getPerfil().toDomain() : null);
 
         return usuario;

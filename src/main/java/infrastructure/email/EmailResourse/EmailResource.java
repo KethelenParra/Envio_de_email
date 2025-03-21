@@ -1,4 +1,4 @@
-package resource;
+package infrastructure.email.EmailResourse;
 
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.reactive.ReactiveMailer;

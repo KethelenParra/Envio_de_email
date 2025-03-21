@@ -34,6 +34,12 @@ public class HashServiceImpl implements HashService {
         }
     }
 
+    @Override
+    public boolean verificandoHash(String senhaDigitada, String hashArmazenado) {
+        String hashDigitado = getHashSenha(senhaDigitada);
+        return hashDigitado.equals(hashArmazenado);
+    }
+
     public static void main(String[] args) {
         HashService hash = new HashServiceImpl();
         System.out.println(hash.getHashSenha("123"));

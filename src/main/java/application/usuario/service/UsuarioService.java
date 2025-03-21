@@ -3,6 +3,7 @@ package application.usuario.service;
 import java.util.List;
 
 import domain.usuario.model.Usuario;
+import infrastructure.usuario.dto.ResetPasswordResponseDTO;
 import infrastructure.usuario.dto.UsuarioRequestDTO;
 
 public interface UsuarioService {
@@ -20,4 +21,6 @@ public interface UsuarioService {
     Usuario findByUsername(String username);
 
     void deleteUsuario(Long id);
+
+    void alterarSenha(Long userId, ResetPasswordResponseDTO resetPasswordResponseDTO);
 }

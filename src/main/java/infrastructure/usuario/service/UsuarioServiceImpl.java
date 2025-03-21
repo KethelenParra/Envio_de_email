@@ -7,8 +7,10 @@ import application.usuario.usecase.CreateUsuarioUseCase;
 import application.usuario.usecase.DeleteUsuarioUseCase;
 import application.usuario.usecase.GetAllUsuarioUseCase;
 import application.usuario.usecase.GetUsuarioByIdUseCase;
+import application.usuario.usecase.ResetPasswordUseCase;
 import application.usuario.usecase.UpdateUsuarioUseCase;
 import domain.usuario.model.Usuario;
+import infrastructure.usuario.dto.ResetPasswordResponseDTO;
 import infrastructure.usuario.dto.UsuarioRequestDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -22,6 +24,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final DeleteUsuarioUseCase deleteUsuarioUseCase;
     private final GetAllUsuarioUseCase getAllUsuarioUseCase;
     private final AutenticarUsuarioUseCase autenticarUsuarioUseCase;
+    private final ResetPasswordUseCase resetPasswordUseCase;
 
     @Inject
     public UsuarioServiceImpl(
@@ -30,7 +33,8 @@ public class UsuarioServiceImpl implements UsuarioService {
             final UpdateUsuarioUseCase updateUsuarioUseCase,
             final DeleteUsuarioUseCase deleteUsuarioUseCase,
             final GetAllUsuarioUseCase getAllUsuarioUseCase,
-            final AutenticarUsuarioUseCase autenticarUsuarioUseCase) {
+            final AutenticarUsuarioUseCase autenticarUsuarioUseCase,
+            final ResetPasswordUseCase resetPasswordUseCase) {
 
         this.getUsuarioByIdUseCase = getUsuarioByIdUseCase;
         this.createUsuarioUseCase = createUsuarioUseCase;
@@ -38,6 +42,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.deleteUsuarioUseCase = deleteUsuarioUseCase;
         this.getAllUsuarioUseCase = getAllUsuarioUseCase;
         this.autenticarUsuarioUseCase = autenticarUsuarioUseCase;
+        this.resetPasswordUseCase = resetPasswordUseCase;
     }
 
     @Override
@@ -73,6 +78,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario findByUsername(String username) {
         return this.autenticarUsuarioUseCase.executeUsername(username);
+    }
+
+    @Override
+    public void alterarSenha(Long userId, ResetPasswordResponseDTO resetPasswordResponseDTO) {
+        this.resetPasswordUseCase.alterarSenha(userId, resetPasswordResponseDTO);
     }
 
 }
