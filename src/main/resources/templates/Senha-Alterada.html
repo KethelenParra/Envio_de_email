@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Redefinição de Senha</title>
+    <title>Senha Alterada com Sucesso</title>
     <style>
         /* Estilos básicos para garantir boa exibição em clientes de e-mail */
         body {
@@ -31,20 +31,6 @@
             color: #333333;
         }
 
-        .button {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #007BFF;
-            color: #ffffff !important;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .button:hover {
-            background-color: #0056b3;
-        }
-
         .footer {
             margin-top: 30px;
             font-size: 14px;
@@ -63,35 +49,22 @@
 
 <body>
     <div class="container">
-        <h1>Redefinição de Senha</h1>
+        <h1>Senha Alterada com Sucesso</h1>
 
         <p>Olá, <strong>{{nomeUsuario}}</strong>,</p>
 
+        <p>Sua senha foi alterada com sucesso.</p>
+
         <p>
-            Recebemos uma solicitação para redefinir a senha de sua conta. Se você não fez essa solicitação,
-            por favor, ignore este e-mail.
-        </p>
-        <p>
-            Caso contrário, para redefinir sua senha, clique no botão abaixo:
+            Caso você não tenha realizado essa alteração, ignore esse e-mail ou entre em contato conosco.
         </p>
 
         <p>
-            <a class="button"
-                href="{{linkRedefinicao}}">Redefinir Minha Senha</a>
+            Se precisar de ajuda ou tiver alguma dúvida, nossa equipe está à disposição para
+            atendê-lo.
         </p>
 
-        <p>
-            O link de redefinição de senha expirará em <strong>{{tempoExpiracao}}</strong> minutos.
-        </p>
-
-        <p>
-            Se você tiver algum problema ou precisar de assistência adicional, não hesite em nos contatar.
-        </p>
-
-        <p>
-            Atenciosamente,<br>
-            Kethelen Parra
-        </p>
+        <p>Atenciosamente,<br>Kethelen Parra</p>
     </div>
 </body>
 

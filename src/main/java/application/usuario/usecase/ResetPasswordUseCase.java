@@ -9,7 +9,6 @@ import infrastructure.usuario.dto.ResetPasswordResponseDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 
 @ApplicationScoped
 public class ResetPasswordUseCase {
@@ -30,17 +29,17 @@ public class ResetPasswordUseCase {
         }
 
         if (usuario.getSenha() == null) {
-            throw new ValidationException("Senha do usuário não está definida.");
+            throw new FormValidationException("Senha do usuário não está definida.");
         }
 
         boolean senhaAntigaCorreta = hashService.verificandoHash(dto.senhaAntiga(), usuario.getSenha());
 
         if (!senhaAntigaCorreta) {
-            throw new ValidationException("Senha antiga não confere.");
+            throw new FormValidationException("Senha antiga não confere.");
         }
 
         if (!dto.novaSenha().equals(dto.confirmacaoNovaSenha())) {
-            throw new ValidationException("A confirmação da nova senha não confere.");
+            throw new FormValidationException("A confirmação da nova senha não confere.");
         }
 
         usuario.setSenha(hashService.getHashSenha(dto.novaSenha()));
@@ -49,13 +48,17 @@ public class ResetPasswordUseCase {
 
         // Enviar e-mail de confirmação da alteração de senha (Adicionar)
 
-        String linkRedefinicao = "https://redefinir-senha-teste.com";
-        int tempoExpiracao = 30;
+        // String linkRedefinicao = "https://redefinir-senha-teste.com";
+        // int tempoExpiracao = 30;
 
-        ((EmailServiceImpl) emailService).sendResetPasswordEmail(
+        // ((EmailServiceImpl) emailService).sendResetPasswordEmail(
+        // "kethelenvictoria2016@gmail.com",
+        // usuario.getName(),
+        // linkRedefinicao,
+        // tempoExpiracao);
+
+        emailService.sendPasswordChangedEmail(
                 "kethelenvictoria2016@gmail.com",
-                usuario.getName(),
-                linkRedefinicao,
-                tempoExpiracao);
+                usuario.getName());
     }
 }

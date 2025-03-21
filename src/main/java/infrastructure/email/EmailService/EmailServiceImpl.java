@@ -51,4 +51,12 @@ public class EmailServiceImpl implements EmailServicePort {
 
         sendEmail(to, "Redefinição de Senha", template);
     }
+
+    public void sendPasswordChangedEmail(String to, String nomeUsuario) {
+        String template = loadTemplate("Senha-Alterada.html");
+
+        template = template.replace("{{nomeUsuario}}", nomeUsuario);
+
+        sendEmail(to, "Senha Alterada com Sucesso", template);
+    }
 }
