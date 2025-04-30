@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 import application.usuario.mapper.UsuarioMapper;
 import application.usuario.service.UsuarioService;
@@ -28,7 +29,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("/usuario")
+@Path("/api/usuario")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UsuarioResource {
@@ -46,6 +47,7 @@ public class UsuarioResource {
     }
 
     @POST
+    @RolesAllowed("GERENTE")
     public Long createUsuario(@Valid final UsuarioRequestDTO usuarioRequestDTO) {
         return this.usuarioService.createUsuario(usuarioRequestDTO);
     }
@@ -59,6 +61,7 @@ public class UsuarioResource {
 
     @GET
     @Path("/{id}")
+    @RolesAllowed("GERENTE")
     public UsuarioRequestDTO findUsuarioById(@PathParam("id") final Long id) {
         return this.usuarioMapper.toDTORequest(this.usuarioService.getUsuarioById(id));
     }
@@ -70,7 +73,8 @@ public class UsuarioResource {
     }
 
     @GET
-    @RolesAllowed("GERENTE")
+    @SecurityRequirement(name = "bearer-jwt")
+    @RolesAllowed({ "GERENTE", "DESENVOLVEDOR" })
     public List<UsuarioResponseDTO> getAllUsuarios() {
         return this.usuarioService.getAllUsuarios().stream()
                 .map(usuarioMapper::toResponseDTO)

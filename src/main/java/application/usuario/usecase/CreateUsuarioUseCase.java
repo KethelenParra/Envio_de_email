@@ -1,5 +1,11 @@
 package application.usuario.usecase;
 
+import java.util.List;
+
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
+
 import application.usuario.mapper.UsuarioMapper;
 import application.usuario.service.HashService;
 import domain.usuario.model.Perfil;
@@ -10,6 +16,7 @@ import infrastructure.usuario.dto.UsuarioRequestDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class CreateUsuarioUseCase {
@@ -17,32 +24,66 @@ public class CreateUsuarioUseCase {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final HashService hashService;
+    private final Keycloak keycloakAdmin;
+
+    private static final String REALM = "MeuRealm";
 
     @Inject
     public CreateUsuarioUseCase(final UsuarioRepository usuarioRepository, final UsuarioMapper usuarioMapper,
-            final HashService hashService) {
+            final HashService hashService, final Keycloak keycloakAdmin) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.hashService = hashService;
+        this.keycloakAdmin = keycloakAdmin;
     }
 
     @Transactional
-    public Long execute(final UsuarioRequestDTO usuarioRequestDTO) {
+    public Long execute(UsuarioRequestDTO dto) {
+        validateInsert(dto);
 
-        validateInsert(usuarioRequestDTO);
+        // 1) Persiste no banco
+        Usuario u = usuarioMapper.toModel(dto);
+        u.setSenha(hashService.getHashSenha(dto.senha()));
+        u.setPerfil(Perfil.fromChar(dto.perfil().charAt(0)));
+        usuarioRepository.save(u);
 
-        final Usuario usuario = this.usuarioMapper.toModel(usuarioRequestDTO);
+        // 2) Cria usuário no Keycloak
+        UserRepresentation rep = new UserRepresentation();
+        rep.setUsername(dto.username());
+        rep.setEmail(dto.email());
+        rep.setEnabled(true);
 
-        usuario.setUsername(usuarioRequestDTO.username());
-        usuario.setName(usuarioRequestDTO.name());
-        usuario.setCpf(usuarioRequestDTO.cpf());
-        usuario.setEmail(usuarioRequestDTO.email());
-        usuario.setSenha(hashService.getHashSenha(usuarioRequestDTO.senha()));
-        usuario.setPerfil(Perfil.fromChar(usuarioRequestDTO.perfil().charAt(0)));
+        Response resp = keycloakAdmin.realm(REALM).users().create(rep);
+        if (resp.getStatus() != 201) {
+            throw new RuntimeException("Keycloak error: HTTP "
+                    + resp.getStatus() + " → " + resp.readEntity(String.class));
+        }
+        String kcId = resp.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
 
-        this.usuarioRepository.save(usuario);
+        // 3) Define a senha no Keycloak
+        CredentialRepresentation cred = new CredentialRepresentation();
+        cred.setType(CredentialRepresentation.PASSWORD);
+        cred.setValue(dto.senha());
+        cred.setTemporary(false);
+        keycloakAdmin.realm(REALM).users().get(kcId).resetPassword(cred);
 
-        return usuario.getId();
+        // 4) Atribui o papel de acordo com o perfil
+        String roleName = (u.getPerfil() == Perfil.GERENTE) ? "GERENTE" : "DESENVOLVEDOR";
+        var roleRep = keycloakAdmin
+                .realm(REALM)
+                .roles()
+                .get(roleName)
+                .toRepresentation();
+
+        keycloakAdmin
+                .realm(REALM)
+                .users()
+                .get(kcId)
+                .roles()
+                .realmLevel()
+                .add(List.of(roleRep));
+
+        return u.getId();
     }
 
     private void validateInsert(final UsuarioRequestDTO usuarioRequestDTO) {
