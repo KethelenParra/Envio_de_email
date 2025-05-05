@@ -12,7 +12,7 @@ import jakarta.ws.rs.Produces;
 public class KeycloakAdminProducer {
 
     @ConfigProperty(name = "keycloak.server-url")
-    String serverUrl; // deve ser "http://localhost:8180/auth"
+    String serverUrl;
 
     @ConfigProperty(name = "keycloak.realm")
     String realm;

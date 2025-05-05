@@ -1,5 +1,7 @@
 package infrastructure.authKey.resource;
 
+import java.util.Map;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -27,10 +29,10 @@ public class AuthResource {
     String realm;
 
     // clientId + secret vindos do quarkus.oidc
-    @ConfigProperty(name = "quarkus.oidc.client-id")
+    @ConfigProperty(name = "keycloak.client-id")
     String clientId;
 
-    @ConfigProperty(name = "quarkus.oidc.credentials.secret")
+    @ConfigProperty(name = "keycloak.client-secret")
     String clientSecret;
 
     @POST
@@ -47,11 +49,17 @@ public class AuthResource {
                 .password(loginRequestDTO.senha())
                 .build()) {
 
-            AccessTokenResponse atr = kc.tokenManager().getAccessToken();
-            return Response.ok(TokenResponseDTO.from(atr)).build();
+            AccessTokenResponse tokenResponse = kc.tokenManager()
+                    .getAccessToken();
+
+            TokenResponseDTO dto = TokenResponseDTO.from(tokenResponse);
+            return Response.ok(dto).build();
 
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao autenticar usuário: " + e.getMessage(), e);
+            return Response
+                    .status(Response.Status.UNAUTHORIZED)
+                    .entity(Map.of("error", "Usuário ou senha inválidos"))
+                    .build();
         }
     }
 }

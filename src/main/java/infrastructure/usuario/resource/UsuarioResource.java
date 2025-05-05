@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 import application.usuario.mapper.UsuarioMapper;
 import application.usuario.service.UsuarioService;

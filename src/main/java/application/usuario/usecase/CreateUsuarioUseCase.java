@@ -51,7 +51,15 @@ public class CreateUsuarioUseCase {
         UserRepresentation rep = new UserRepresentation();
         rep.setUsername(dto.username());
         rep.setEmail(dto.email());
+        rep.setEmailVerified(true);
         rep.setEnabled(true);
+        String[] nomes = dto.name().trim().split("\\s+");
+        if (nomes.length > 0) {
+            rep.setFirstName(nomes[0]); // primeiro token
+            if (nomes.length > 1) {
+                rep.setLastName(nomes[nomes.length - 1]); // último token
+            }
+        }
 
         Response resp = keycloakAdmin.realm(REALM).users().create(rep);
         if (resp.getStatus() != 201) {
