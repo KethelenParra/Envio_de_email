@@ -73,7 +73,6 @@ public class UsuarioResource {
     }
 
     @GET
-    @SecurityRequirement(name = "bearer-jwt")
     @RolesAllowed({ "GERENTE", "DESENVOLVEDOR" })
     public List<UsuarioResponseDTO> getAllUsuarios() {
         return this.usuarioService.getAllUsuarios().stream()

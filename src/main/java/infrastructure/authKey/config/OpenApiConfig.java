@@ -6,7 +6,6 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-@SecurityScheme(securitySchemeName = "bearer-jwt", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT", description = "Bearer token JWT")
+@SecurityScheme(securitySchemeName = "bearer-jwt", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT", description = "Autenticação via Bearer-JWT")
 public class OpenApiConfig {
-
 }
