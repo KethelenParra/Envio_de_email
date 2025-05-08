@@ -1,6 +1,6 @@
 package infrastructure.auth.dto;
 
-public record AuthRequestDTO(
+public record AuthLoginDTO(
         String username,
         String senha) {
 }
