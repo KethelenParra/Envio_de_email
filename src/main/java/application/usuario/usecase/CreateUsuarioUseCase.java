@@ -12,6 +12,8 @@ import domain.usuario.model.Perfil;
 import domain.usuario.model.Usuario;
 import domain.usuario.repository.UsuarioRepository;
 import exception.FormValidationException;
+import application.auth.usecase.CreateUserUseCase;
+import infrastructure.auth.dto.AuthCreateUserDTO;
 import infrastructure.usuario.dto.UsuarioRequestDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,17 +26,18 @@ public class CreateUsuarioUseCase {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final HashService hashService;
-    private final Keycloak keycloakAdmin;
-
+    private final CreateUserUseCase createUserUseCase;
     private static final String REALM = "MeuRealm";
 
     @Inject
-    public CreateUsuarioUseCase(final UsuarioRepository usuarioRepository, final UsuarioMapper usuarioMapper,
-            final HashService hashService, final Keycloak keycloakAdmin) {
+    public CreateUsuarioUseCase(UsuarioRepository usuarioRepository,
+            UsuarioMapper usuarioMapper,
+            HashService hashService,
+            CreateUserUseCase createUserUseCase) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.hashService = hashService;
-        this.keycloakAdmin = keycloakAdmin;
+        this.createUserUseCase = createUserUseCase;
     }
 
     @Transactional
@@ -47,49 +50,17 @@ public class CreateUsuarioUseCase {
         u.setPerfil(Perfil.fromChar(dto.perfil().charAt(0)));
         usuarioRepository.save(u);
 
-        // 2) Cria usuário no Keycloak
-        UserRepresentation rep = new UserRepresentation();
-        rep.setUsername(dto.username());
-        rep.setEmail(dto.email());
-        rep.setEmailVerified(true);
-        rep.setEnabled(true);
         String[] nomes = dto.name().trim().split("\\s+");
-        if (nomes.length > 0) {
-            rep.setFirstName(nomes[0]); // primeiro token
-            if (nomes.length > 1) {
-                rep.setLastName(nomes[nomes.length - 1]); // último token
-            }
-        }
 
-        Response resp = keycloakAdmin.realm(REALM).users().create(rep);
-        if (resp.getStatus() != 201) {
-            throw new RuntimeException("Keycloak error: HTTP "
-                    + resp.getStatus() + " → " + resp.readEntity(String.class));
-        }
-        String kcId = resp.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
-
-        // 3) Define a senha no Keycloak
-        CredentialRepresentation cred = new CredentialRepresentation();
-        cred.setType(CredentialRepresentation.PASSWORD);
-        cred.setValue(dto.senha());
-        cred.setTemporary(false);
-        keycloakAdmin.realm(REALM).users().get(kcId).resetPassword(cred);
-
-        // 4) Atribui o papel de acordo com o perfil
-        String roleName = (u.getPerfil() == Perfil.GERENTE) ? "GERENTE" : "DESENVOLVEDOR";
-        var roleRep = keycloakAdmin
-                .realm(REALM)
-                .roles()
-                .get(roleName)
-                .toRepresentation();
-
-        keycloakAdmin
-                .realm(REALM)
-                .users()
-                .get(kcId)
-                .roles()
-                .realmLevel()
-                .add(List.of(roleRep));
+        // 2) Cria usuário no Keycloak
+        AuthCreateUserDTO authDTO = new AuthCreateUserDTO(
+                dto.username(),
+                dto.email(),
+                true,
+                true,
+                nomes.length > 0 ? nomes[0] : null,
+                nomes.length > 1 ? nomes[nomes.length - 1] : null);
+        createUserUseCase.execute(authDTO);
 
         return u.getId();
     }

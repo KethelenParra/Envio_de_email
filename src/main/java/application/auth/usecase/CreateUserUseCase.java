@@ -6,12 +6,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class CreateUserUseCasa {
+public class CreateUserUseCase {
 
     private final AuthService authService;
 
     @Inject
-    public CreateUserUseCasa(AuthService authService) {
+    public CreateUserUseCase(AuthService authService) {
         this.authService = authService;
     }
 

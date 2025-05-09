@@ -19,5 +19,4 @@ public interface AuthService {
     TokenResponseDTO login(AuthLoginDTO dto);
 
     void logout(AuthLogoutDTO dto);
-
 }

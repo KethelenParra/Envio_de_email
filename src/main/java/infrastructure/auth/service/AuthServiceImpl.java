@@ -2,6 +2,10 @@ package infrastructure.auth.service;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.AccessTokenResponse;
 
 import application.auth.service.AuthService;
 import infrastructure.auth.dto.AuthCreateUserDTO;
@@ -30,6 +34,9 @@ public class AuthServiceImpl implements AuthService {
     @ConfigProperty(name = "keycloak.client-secret")
     String clientSecret;
 
+    @ConfigProperty(name = "keycloak.server-url")
+    String keycloakServerUrl;
+
     @Override
     public void createUser(AuthCreateUserDTO dto) {
         var response = keycloakAuthClient.createUser(realm, dto);
@@ -55,11 +62,28 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenResponseDTO login(AuthLoginDTO dto) {
-        return keycloakAuthClient.login(realm, dto.username(), dto.senha(), clientId, clientSecret);
+        // grantType "password" para Resource Owner Password Credentials
+        return keycloakAuthClient.login(
+                realm,
+                "password",
+                dto.username(),
+                dto.senha(),
+                clientId,
+                clientSecret);
     }
 
+    @Override
     public void logout(AuthLogoutDTO dto) {
-        keycloakAuthClient.logout(realm, dto.refreshToken(), clientId, clientSecret);
+        keycloakAuthClient.logout(
+                realm,
+                dto.refreshToken(),
+                clientId,
+                clientSecret);
     }
 
+    public String getAdminAccessToken() {
+        var response = keycloakAuthClient.login(
+                realm, "client_credentials", null, null, clientId, clientSecret);
+        return response.accessToken();
+    }
 }

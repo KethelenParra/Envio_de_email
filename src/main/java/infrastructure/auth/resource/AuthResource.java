@@ -35,7 +35,8 @@ public class AuthResource {
             return Response.ok(token).build();
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("Usuário ou senha inválidos").build();
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
         }
     }
 }
