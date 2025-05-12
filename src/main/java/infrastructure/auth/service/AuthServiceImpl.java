@@ -39,30 +39,35 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void createUser(AuthCreateUserDTO dto) {
-        var response = keycloakAuthClient.createUser(realm, dto);
-        if (response.getStatus() != 201) {
-            throw new RuntimeException("Erro ao criar usuário: " + response.readEntity(String.class));
+        String bearer = "Bearer " + getAdminAccessToken();
+        // 1) cria o usuário no Keycloak
+        var resp = keycloakAuthClient.createUser(bearer, realm, dto);
+        if (resp.getStatus() != 201) {
+            throw new RuntimeException("Erro ao criar usuário no Keycloak: "
+                    + resp.readEntity(String.class));
         }
     }
 
     @Override
     public void updateUser(String id, AuthUpdateUserDTO dto) {
-        keycloakAuthClient.updateUser(realm, id, dto);
+        String bearer = "Bearer " + getAdminAccessToken();
+        keycloakAuthClient.updateUser(bearer, realm, id, dto);
     }
 
     @Override
     public void deleteUser(String id) {
-        keycloakAuthClient.deleteUser(realm, id);
+        String bearer = "Bearer " + getAdminAccessToken();
+        keycloakAuthClient.deleteUser(bearer, realm, id);
     }
 
     @Override
     public void resetPassword(String id, AuthResetPasswordUserDTO dto) {
-        keycloakAuthClient.resetPassword(realm, id, dto);
+        String bearer = "Bearer " + getAdminAccessToken();
+        keycloakAuthClient.resetPassword(bearer, realm, id, dto);
     }
 
     @Override
     public TokenResponseDTO login(AuthLoginDTO dto) {
-        // grantType "password" para Resource Owner Password Credentials
         return keycloakAuthClient.login(
                 realm,
                 "password",
@@ -81,9 +86,18 @@ public class AuthServiceImpl implements AuthService {
                 clientSecret);
     }
 
+    /**
+     * Obtém token de administrador via client-credentials
+     * (usado internamente pelos métodos admin acima)
+     */
     public String getAdminAccessToken() {
-        var response = keycloakAuthClient.login(
-                realm, "client_credentials", null, null, clientId, clientSecret);
-        return response.accessToken();
+        TokenResponseDTO tok = keycloakAuthClient.login(
+                realm,
+                "client_credentials",
+                null, // usuário e senha não usados
+                null,
+                clientId,
+                clientSecret);
+        return tok.accessToken();
     }
 }

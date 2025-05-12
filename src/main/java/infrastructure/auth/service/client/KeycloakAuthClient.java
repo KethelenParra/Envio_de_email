@@ -1,44 +1,67 @@
 package infrastructure.auth.service.client;
 
-import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-
 import infrastructure.auth.dto.AuthCreateUserDTO;
 import infrastructure.auth.dto.AuthResetPasswordUserDTO;
 import infrastructure.auth.dto.AuthUpdateUserDTO;
 import infrastructure.auth.dto.TokenResponseDTO;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @RegisterRestClient(configKey = "keycloak-api")
 public interface KeycloakAuthClient {
 
-    // final static String path = "/realms/{realm}";
-    // final static String pathUsers = "/admin/realms/{realm}/users";
+    String PATH = "/realms/{realm}";
+    String PATH_USERS = "/admin/realms/{realm}/users";
+
+    // ---- admin endpoints (precisam do Bearer-token) ----
 
     @POST
-    @Path("/admin/realms/{realm}/users")
+    @Path(PATH_USERS)
     @Consumes(MediaType.APPLICATION_JSON)
-    Response createUser(@PathParam("realm") String realm, AuthCreateUserDTO userDto);
+    Response createUser(
+            @HeaderParam("Authorization") String bearerToken,
+            @PathParam("realm") String realm,
+            AuthCreateUserDTO userDto);
 
     @PUT
-    @Path("/admin/realms/{realm}/users/{id}")
+    @Path(PATH_USERS + "/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response updateUser(@PathParam("realm") String realm, @PathParam("id") String userId, AuthUpdateUserDTO userDto);
+    Response updateUser(
+            @HeaderParam("Authorization") String bearerToken,
+            @PathParam("realm") String realm,
+            @PathParam("id") String userId,
+            AuthUpdateUserDTO userDto);
 
     @DELETE
-    @Path("/admin/realms/{realm}/users/{id}")
-    Response deleteUser(@PathParam("realm") String realm, @PathParam("id") String userId);
+    @Path(PATH_USERS + "/{id}")
+    Response deleteUser(
+            @HeaderParam("Authorization") String bearerToken,
+            @PathParam("realm") String realm,
+            @PathParam("id") String userId);
 
     @PUT
-    @Path("/admin/realms/{realm}/users/{id}/reset-password")
+    @Path(PATH_USERS + "/{id}/reset-password")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response resetPassword(@PathParam("realm") String realm, @PathParam("id") String userId,
+    Response resetPassword(
+            @HeaderParam("Authorization") String bearerToken,
+            @PathParam("realm") String realm,
+            @PathParam("id") String userId,
             AuthResetPasswordUserDTO dto);
 
+    // ---- token endpoints (não usam header extra) ----
+
     @POST
-    @Path("/realms/{realm}/protocol/openid-connect/token")
+    @Path(PATH + "/protocol/openid-connect/token")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     TokenResponseDTO login(
@@ -50,12 +73,11 @@ public interface KeycloakAuthClient {
             @FormParam("client_secret") String clientSecret);
 
     @POST
-    @Path("/realms/{realm}/protocol/openid-connect/logout")
+    @Path(PATH + "/protocol/openid-connect/logout")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     void logout(
             @PathParam("realm") String realm,
             @FormParam("refresh_token") String refreshToken,
             @FormParam("client_id") String clientId,
             @FormParam("client_secret") String clientSecret);
-
 }

@@ -1,5 +1,6 @@
 package infrastructure.auth.resource;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -35,7 +36,7 @@ public class AuthResource {
             return Response.ok(token).build();
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(Map.of("error", e.getMessage()))
+                    .entity(Collections.singletonMap("error", e.getMessage()))
                     .build();
         }
     }
