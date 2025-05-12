@@ -12,7 +12,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @RegisterRestClient(configKey = "keycloak-api")
-@RegisterClientHeaders(KeycloakAuthClient.KeycloakAuthHeaderFactory.class)
 public interface KeycloakAuthClient {
 
     // final static String path = "/realms/{realm}";
