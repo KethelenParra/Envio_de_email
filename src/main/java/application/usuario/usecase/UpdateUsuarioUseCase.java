@@ -36,7 +36,6 @@ public class UpdateUsuarioUseCase {
         usuario.setName(usuarioRequestDTO.name());
         usuario.setCpf(usuarioRequestDTO.cpf());
         usuario.setEmail(usuarioRequestDTO.email());
-        usuario.setSenha(hashService.getHashSenha(usuarioRequestDTO.senha()));
         usuario.setPerfil(Perfil.fromChar(usuarioRequestDTO.perfil().charAt(0)));
 
         this.usuarioRepository.save(usuario);

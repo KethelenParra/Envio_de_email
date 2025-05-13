@@ -34,7 +34,6 @@ public class UsuarioMapper {
                 model.getName(),
                 model.getCpf(),
                 model.getEmail(),
-                String.valueOf(model.getPerfil().getTipo()),
-                model.getSenha());
+                String.valueOf(model.getPerfil().getTipo()));
     }
 }
