@@ -23,8 +23,6 @@ public interface KeycloakAuthClient {
     String PATH = "/realms/{realm}";
     String PATH_USERS = "/admin/realms/{realm}/users";
 
-    // ---- admin endpoints (precisam do Bearer-token) ----
-
     @POST
     @Path(PATH_USERS)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -57,8 +55,6 @@ public interface KeycloakAuthClient {
             @PathParam("realm") String realm,
             @PathParam("id") String userId,
             AuthResetPasswordUserDTO dto);
-
-    // ---- token endpoints (não usam header extra) ----
 
     @POST
     @Path(PATH + "/protocol/openid-connect/token")

@@ -44,7 +44,6 @@ public class CreateUsuarioUseCase {
     public Long execute(UsuarioRequestDTO dto) {
         validateInsert(dto);
 
-        // 1) Persiste no banco
         Usuario u = usuarioMapper.toModel(dto);
         u.setSenha(hashService.getHashSenha(dto.senha()));
         u.setPerfil(Perfil.fromChar(dto.perfil().charAt(0)));
@@ -52,7 +51,6 @@ public class CreateUsuarioUseCase {
 
         String[] nomes = dto.name().trim().split("\\s+");
 
-        // 2) Cria usuário no Keycloak
         AuthCreateUserDTO authDTO = new AuthCreateUserDTO(
                 dto.username(),
                 dto.email(),

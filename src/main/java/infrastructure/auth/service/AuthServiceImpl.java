@@ -86,15 +86,11 @@ public class AuthServiceImpl implements AuthService {
                 clientSecret);
     }
 
-    /**
-     * Obtém token de administrador via client-credentials
-     * (usado internamente pelos métodos admin acima)
-     */
     public String getAdminAccessToken() {
         TokenResponseDTO tok = keycloakAuthClient.login(
                 realm,
                 "client_credentials",
-                null, // usuário e senha não usados
+                null,
                 null,
                 clientId,
                 clientSecret);
