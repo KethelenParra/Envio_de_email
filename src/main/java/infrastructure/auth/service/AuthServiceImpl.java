@@ -1,23 +1,17 @@
 package infrastructure.auth.service;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.representations.AccessTokenResponse;
-
 import application.auth.service.AuthService;
-import infrastructure.auth.dto.AuthCreateUserDTO;
-import infrastructure.auth.dto.AuthLoginDTO;
-import infrastructure.auth.dto.AuthLogoutDTO;
-import infrastructure.auth.dto.AuthResetPasswordUserDTO;
-import infrastructure.auth.dto.AuthUpdateUserDTO;
-import infrastructure.auth.dto.TokenResponseDTO;
+import infrastructure.auth.dto.*;
 import infrastructure.auth.service.client.KeycloakAuthClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.keycloak.representations.idm.RoleRepresentation;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class AuthServiceImpl implements AuthService {
@@ -87,6 +81,21 @@ public class AuthServiceImpl implements AuthService {
                 dto.refreshToken(),
                 clientId,
                 clientSecret);
+    }
+
+    @Override
+    public void assignRealmRoles(String userId, List<String> rolesNames) {
+        String bearer = "Bearer " + getAdminAccessToken();
+        // 1) Obter RoleRepresentation de cada nome
+        List<RoleRepresentation> reps = rolesNames.stream()
+                .map(role -> keycloakAuthClient.getRealmRole(bearer, realm, role))
+                .collect(Collectors.toList());
+
+        // 2) Atribuir ao usuário
+        Response resp = keycloakAuthClient.addRealmRoleMapping(bearer, realm, userId, reps);
+        if (resp.getStatus() != 204) {
+            throw new RuntimeException("Erro ao atribuir papéis no Keycloak: " + resp.readEntity(String.class));
+        }
     }
 
     public String getAdminAccessToken() {

@@ -1,6 +1,9 @@
 package application.usuario.usecase;
 
 import application.auth.usecase.CreateUserUseCase;
+
+import java.util.List;
+
 import application.auth.service.AuthService;
 import infrastructure.auth.dto.AuthCreateUserDTO;
 import infrastructure.auth.dto.AuthResetPasswordUserDTO;
@@ -65,6 +68,11 @@ public class CreateUsuarioUseCase {
                 dto.cpf(),
                 false);
         authService.resetPassword(keycloakId, pwdDto);
+
+        String roleName = dto.perfil().charAt(0) == 'D'
+                ? "DESENVOLVEDOR"
+                : "GERENTE";
+        authService.assignRealmRoles(keycloakId, List.of(roleName));
 
         return u.getId();
     }
