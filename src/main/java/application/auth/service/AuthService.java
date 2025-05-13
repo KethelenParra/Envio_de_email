@@ -8,7 +8,7 @@ import infrastructure.auth.dto.AuthUpdateUserDTO;
 import infrastructure.auth.dto.TokenResponseDTO;
 
 public interface AuthService {
-    void createUser(AuthCreateUserDTO dto);
+    String createUser(AuthCreateUserDTO dto);
 
     void updateUser(String id, AuthUpdateUserDTO dto);
 

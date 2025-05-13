@@ -17,6 +17,7 @@ import infrastructure.auth.dto.TokenResponseDTO;
 import infrastructure.auth.service.client.KeycloakAuthClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class AuthServiceImpl implements AuthService {
@@ -38,14 +39,16 @@ public class AuthServiceImpl implements AuthService {
     String keycloakServerUrl;
 
     @Override
-    public void createUser(AuthCreateUserDTO dto) {
+    public String createUser(AuthCreateUserDTO dto) {
         String bearer = "Bearer " + getAdminAccessToken();
-        // 1) cria o usuário no Keycloak
-        var resp = keycloakAuthClient.createUser(bearer, realm, dto);
+        Response resp = keycloakAuthClient.createUser(bearer, realm, dto);
         if (resp.getStatus() != 201) {
             throw new RuntimeException("Erro ao criar usuário no Keycloak: "
                     + resp.readEntity(String.class));
         }
+        // extrai ID da URL: /admin/realms/MeuRealm/users/{id}
+        String location = resp.getHeaderString("Location");
+        return location.substring(location.lastIndexOf('/') + 1);
     }
 
     @Override

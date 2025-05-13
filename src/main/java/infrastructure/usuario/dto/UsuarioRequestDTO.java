@@ -12,7 +12,5 @@ public record UsuarioRequestDTO(
 
         @NotBlank(message = "O campo email não pode ser nulo.") String email,
 
-        @NotBlank(message = "O campo perfil não pode ser nulo.") String perfil,
-
-        String senha) {
+        @NotBlank(message = "O campo perfil não pode ser nulo.") String perfil) {
 }

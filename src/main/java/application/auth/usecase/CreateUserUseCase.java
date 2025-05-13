@@ -15,7 +15,7 @@ public class CreateUserUseCase {
         this.authService = authService;
     }
 
-    public void execute(AuthCreateUserDTO dto) {
-        authService.createUser(dto);
+    public String execute(AuthCreateUserDTO dto) {
+        return authService.createUser(dto);
     }
 }
