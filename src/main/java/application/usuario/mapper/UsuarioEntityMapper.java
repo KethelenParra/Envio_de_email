@@ -18,6 +18,7 @@ public class UsuarioEntityMapper {
         entity.setEmail(model.getEmail());
         entity.setSenha(model.getSenha());
         entity.setPerfil(model.getPerfil() != null ? PerfilEnum.fromDomain(model.getPerfil()) : null);
+        entity.setKeycloakId(model.getKeycloakId());
 
         return entity;
     }
@@ -32,6 +33,7 @@ public class UsuarioEntityMapper {
         usuario.setEmail(entity.getEmail());
         usuario.setSenha(entity.getSenha());
         usuario.setPerfil(entity.getPerfil() != null ? entity.getPerfil().toDomain() : null);
+        usuario.setKeycloakId(entity.getKeycloakId());
 
         return usuario;
     }

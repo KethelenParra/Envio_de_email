@@ -61,7 +61,8 @@ public class CreateUsuarioUseCase {
                 getFirstName(dto.name()),
                 getLastName(dto.name()));
         String keycloakId = createUserUseCase.execute(authDTO);
-
+        u.setKeycloakId(keycloakId);
+        usuarioRepository.save(u);
         // 3) Resetar a senha no Keycloak para ser o próprio CPF
         AuthResetPasswordUserDTO pwdDto = new AuthResetPasswordUserDTO(
                 "password",

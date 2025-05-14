@@ -113,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public List<UserRepresentation> findUsersByEmail(String email) {
         String bearer = "Bearer " + getAdminAccessToken();
-        return keycloakAuthClient.searchUser(bearer, realm, email);
+        return keycloakAuthClient.searchUserEmail(bearer, realm, email);
     }
 
     public String getAdminAccessToken() {

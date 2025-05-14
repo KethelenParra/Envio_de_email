@@ -27,6 +27,9 @@ public class UsuarioEntity extends DefaultEntity {
     @Column(name = "perfil", nullable = false)
     private PerfilEnum perfil;
 
+    @Column(name = "keycloak_id", unique = true, nullable = true)
+    private String keycloakId;
+
     public UsuarioEntity() {
     }
 
@@ -36,7 +39,8 @@ public class UsuarioEntity extends DefaultEntity {
             final String name,
             final String cpf,
             final String email,
-            final PerfilEnum perfil) {
+            final PerfilEnum perfil,
+            final String keycloakId) {
 
         this.username = username;
         this.senha = senha;
@@ -44,6 +48,7 @@ public class UsuarioEntity extends DefaultEntity {
         this.cpf = cpf;
         this.email = email;
         this.perfil = perfil;
+        this.keycloakId = keycloakId;
     }
 
     public String getUsername() {
@@ -92,5 +97,13 @@ public class UsuarioEntity extends DefaultEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getKeycloakId() {
+        return keycloakId;
+    }
+
+    public void setKeycloakId(String keycloakId) {
+        this.keycloakId = keycloakId;
     }
 }

@@ -10,6 +10,7 @@ public class Usuario extends Default {
     private String email;
     private String senha;
     private Perfil perfil;
+    private String keycloakId;
 
     public Usuario() {
     }
@@ -69,5 +70,13 @@ public class Usuario extends Default {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getKeycloakId() {
+        return keycloakId;
+    }
+
+    public void setKeycloakId(String keycloakId) {
+        this.keycloakId = keycloakId;
     }
 }

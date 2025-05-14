@@ -58,6 +58,7 @@ public class UsuarioResource {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed("GERENTE")
     public UsuarioRequestDTO updateUsuario(@PathParam("id") final Long id,
             @Valid final UsuarioRequestDTO usuarioRequestDTO) {
         return this.usuarioService.updateUsuario(id, usuarioRequestDTO);
