@@ -6,6 +6,8 @@ import domain.usuario.repository.UsuarioRepository;
 import exception.FormValidationException;
 import infrastructure.email.EmailService.EmailServiceImpl;
 import infrastructure.usuario.dto.ResetPasswordResponseDTO;
+import application.auth.service.AuthService;
+import infrastructure.auth.dto.AuthResetPasswordUserDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -21,9 +23,12 @@ public class ResetPasswordUseCase {
     @Inject
     EmailServiceImpl emailService;
 
+    @Inject
+    AuthService authService;
+
     @Transactional
-    public void alterarSenha(Long userId, ResetPasswordResponseDTO dto) {
-        Usuario usuario = usuarioRepository.findById(userId);
+    public void alterarSenha(String email, ResetPasswordResponseDTO dto) {
+        Usuario usuario = usuarioRepository.findByEmail(email);
         if (usuario == null) {
             throw new FormValidationException("Usuário não encontrado.");
         }
@@ -46,6 +51,9 @@ public class ResetPasswordUseCase {
 
         this.usuarioRepository.save(usuario);
 
+        String kcId = authService.findKeycloakIdByUsername(usuario.getUsername());
+        AuthResetPasswordUserDTO kcDto = new AuthResetPasswordUserDTO("password", dto.novaSenha(), false);
+        authService.resetPassword(kcId, kcDto);
         // Enviar e-mail de confirmação da alteração de senha (Adicionar)
 
         // String linkRedefinicao = "https://redefinir-senha-teste.com";

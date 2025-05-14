@@ -1,22 +1,30 @@
 package infrastructure.usuario.service;
 
 import java.util.List;
+
+import org.keycloak.representations.idm.UserRepresentation;
+
 import application.usuario.service.UsuarioService;
 import application.usuario.usecase.AutenticarUsuarioUseCase;
 import application.usuario.usecase.CreateUsuarioUseCase;
 import application.usuario.usecase.DeleteUsuarioUseCase;
 import application.usuario.usecase.GetAllUsuarioUseCase;
 import application.usuario.usecase.GetUsuarioByIdUseCase;
+import application.usuario.usecase.GetUsuarioByCpfUseCase;
+import application.usuario.usecase.GetUsuarioByEmailUseCase;
 import application.usuario.usecase.ResetPasswordUseCase;
 import application.usuario.usecase.UpdateUsuarioUseCase;
 import domain.usuario.model.Usuario;
 import infrastructure.usuario.dto.ResetPasswordResponseDTO;
 import infrastructure.usuario.dto.UsuarioRequestDTO;
+import application.auth.service.AuthService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class UsuarioServiceImpl implements UsuarioService {
+
+    private final AuthService authService;
 
     private final GetUsuarioByIdUseCase getUsuarioByIdUseCase;
     private final CreateUsuarioUseCase createUsuarioUseCase;
@@ -25,6 +33,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final GetAllUsuarioUseCase getAllUsuarioUseCase;
     private final AutenticarUsuarioUseCase autenticarUsuarioUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
+    private final GetUsuarioByCpfUseCase getUsuarioByCpfUseCase;
+    private final GetUsuarioByEmailUseCase getUsuarioByEmailUseCase;
 
     @Inject
     public UsuarioServiceImpl(
@@ -34,7 +44,10 @@ public class UsuarioServiceImpl implements UsuarioService {
             final DeleteUsuarioUseCase deleteUsuarioUseCase,
             final GetAllUsuarioUseCase getAllUsuarioUseCase,
             final AutenticarUsuarioUseCase autenticarUsuarioUseCase,
-            final ResetPasswordUseCase resetPasswordUseCase) {
+            final ResetPasswordUseCase resetPasswordUseCase,
+            final GetUsuarioByCpfUseCase getUsuarioByCpfUseCase,
+            final GetUsuarioByEmailUseCase getUsuarioByEmailUseCase,
+            final AuthService authService) {
 
         this.getUsuarioByIdUseCase = getUsuarioByIdUseCase;
         this.createUsuarioUseCase = createUsuarioUseCase;
@@ -43,6 +56,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.getAllUsuarioUseCase = getAllUsuarioUseCase;
         this.autenticarUsuarioUseCase = autenticarUsuarioUseCase;
         this.resetPasswordUseCase = resetPasswordUseCase;
+        this.getUsuarioByCpfUseCase = getUsuarioByCpfUseCase;
+        this.getUsuarioByEmailUseCase = getUsuarioByEmailUseCase;
+        this.authService = authService;
     }
 
     @Override
@@ -81,8 +97,23 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public void alterarSenha(Long userId, ResetPasswordResponseDTO resetPasswordResponseDTO) {
-        this.resetPasswordUseCase.alterarSenha(userId, resetPasswordResponseDTO);
+    public Usuario findByCpf(String cpf) {
+        return this.getUsuarioByCpfUseCase.execute(cpf);
+    }
+
+    @Override
+    public Usuario findByEmail(String email) {
+        return this.getUsuarioByEmailUseCase.execute(email);
+    }
+
+    @Override
+    public void alterarSenha(String email, ResetPasswordResponseDTO resetPasswordResponseDTO) {
+        this.resetPasswordUseCase.alterarSenha(email, resetPasswordResponseDTO);
+    }
+
+    @Override
+    public List<UserRepresentation> findKeycloakUsersByEmail(String email) {
+        return authService.findUsersByEmail(email);
     }
 
 }

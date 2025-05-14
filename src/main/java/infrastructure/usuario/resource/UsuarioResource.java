@@ -1,9 +1,12 @@
 package infrastructure.usuario.resource;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.keycloak.representations.idm.UserRepresentation;
 
 import application.usuario.mapper.UsuarioMapper;
 import application.usuario.service.UsuarioService;
@@ -25,8 +28,10 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 
 @Path("/api/usuario")
 @Produces(MediaType.APPLICATION_JSON)
@@ -34,7 +39,7 @@ import jakarta.ws.rs.core.Response;
 public class UsuarioResource {
 
     @Inject
-    JWTParser jwtParser;
+    SecurityContext securityContext;
 
     private final UsuarioService usuarioService;
     private final UsuarioMapper usuarioMapper;
@@ -81,36 +86,30 @@ public class UsuarioResource {
 
     @PUT
     @Path("/alterar-senha")
-    public Response alterarSenha(@CookieParam("jwt_token") String token,
-            @Valid ResetPasswordResponseDTO dto) {
-        if (token == null || token.isEmpty()) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("Usuário não autenticado")
-                    .build();
-        }
+    @RolesAllowed({ "GERENTE", "DESENVOLVEDOR" })
+    public Response alterarSenha(@Valid ResetPasswordResponseDTO dto) {
+        JsonWebToken jwt = (JsonWebToken) securityContext.getUserPrincipal();
+        String email = jwt.getClaim("email");
 
-        try {
-            JsonWebToken jwt = jwtParser.parse(token);
-            String username = jwt.getSubject();
+        usuarioService.alterarSenha(email, dto);
+        return Response.noContent().build();
+    }
 
-            Usuario usuario = usuarioService.findByUsername(username);
-            if (usuario == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Usuário não encontrado")
-                        .build();
-            }
+    @GET
+    @Path("/email/{email}")
+    @RolesAllowed({ "GERENTE", "DESENVOLVEDOR" })
+    public Response findByEmail(@PathParam("email") String email) {
+        // 1) Busca no banco
+        Usuario usuario = usuarioService.findByEmail(email);
 
-            usuarioService.alterarSenha(usuario.getId(), dto);
+        // 2) Busca no Keycloak
+        List<UserRepresentation> kcUsers = usuarioService.findKeycloakUsersByEmail(email);
 
-            return Response.ok("{\"mensagem\": \"Senha alterada com sucesso\"}").build();
-        } catch (ParseException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Token inválido")
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Erro ao alterar senha: " + e.getMessage())
-                    .build();
-        }
+        // 3) Monta o retorno
+        Map<String, Object> result = new HashMap<>();
+        result.put("local", usuario);
+        result.put("keycloak", kcUsers);
+
+        return Response.ok(result).build();
     }
 }

@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -96,6 +97,23 @@ public class AuthServiceImpl implements AuthService {
         if (resp.getStatus() != 204) {
             throw new RuntimeException("Erro ao atribuir papéis no Keycloak: " + resp.readEntity(String.class));
         }
+    }
+
+    @Override
+    public String findKeycloakIdByUsername(String username) {
+        String bearer = "Bearer " + getAdminAccessToken();
+
+        List<UserRepresentation> users = keycloakAuthClient.searchUser(bearer, realm, username);
+        if (users == null || users.isEmpty()) {
+            throw new RuntimeException("Usuário Keycloak não encontrado: " + username);
+        }
+        return users.get(0).getId();
+    }
+
+    @Override
+    public List<UserRepresentation> findUsersByEmail(String email) {
+        String bearer = "Bearer " + getAdminAccessToken();
+        return keycloakAuthClient.searchUser(bearer, realm, email);
     }
 
     public String getAdminAccessToken() {

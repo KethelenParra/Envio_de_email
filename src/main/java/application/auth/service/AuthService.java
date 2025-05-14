@@ -2,6 +2,8 @@ package application.auth.service;
 
 import java.util.List;
 
+import org.keycloak.representations.idm.UserRepresentation;
+
 import infrastructure.auth.dto.AuthCreateUserDTO;
 import infrastructure.auth.dto.AuthLoginDTO;
 import infrastructure.auth.dto.AuthLogoutDTO;
@@ -23,4 +25,8 @@ public interface AuthService {
     void logout(AuthLogoutDTO dto);
 
     void assignRealmRoles(String userId, List<String> roles);
+
+    String findKeycloakIdByUsername(String username);
+
+    List<UserRepresentation> findUsersByEmail(String email);
 }

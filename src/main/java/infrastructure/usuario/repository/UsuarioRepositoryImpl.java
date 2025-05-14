@@ -75,6 +75,32 @@ public class UsuarioRepositoryImpl extends BaseRepository implements UsuarioRepo
     }
 
     @Override
+    public Usuario findByEmail(String email) {
+        String query = "SELECT u FROM Usuario u WHERE u.email = :email";
+        UsuarioEntity entity = this.getEntityManager()
+                .createQuery(query, UsuarioEntity.class)
+                .setParameter("email", email)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        return entity != null ? this.mapper.toModel(entity) : null;
+    }
+
+    @Override
+    public Usuario findByCpf(String cpf) {
+        String query = "SELECT u FROM Usuario u WHERE u.cpf = :cpf";
+        UsuarioEntity entity = this.getEntityManager()
+                .createQuery(query, UsuarioEntity.class)
+                .setParameter("cpf", cpf)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        return entity != null ? this.mapper.toModel(entity) : null;
+    }
+
+    @Override
     public Usuario findByUsernameAndSenha(String username, String senha) {
         String query = "SELECT u FROM Usuario u WHERE u.username = :username AND u.senha = :senha";
         UsuarioEntity entity = this.getEntityManager()

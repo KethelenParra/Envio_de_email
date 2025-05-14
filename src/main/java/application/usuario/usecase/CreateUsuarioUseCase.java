@@ -78,6 +78,12 @@ public class CreateUsuarioUseCase {
     }
 
     private void validateInsert(UsuarioRequestDTO dto) {
+        if (usuarioRepository.findByEmail(dto.email()) != null) {
+            throw new FormValidationException("E-mail já cadastrado: " + dto.email());
+        }
+        if (usuarioRepository.findByCpf(dto.cpf()) != null) {
+            throw new FormValidationException("CPF já cadastrado: " + dto.cpf());
+        }
         if (dto.perfil().length() != 1) {
             throw new FormValidationException("O perfil informado é inválido.");
         }

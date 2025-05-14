@@ -14,6 +14,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -21,6 +22,7 @@ import java.util.List;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 
 @RegisterRestClient(configKey = "keycloak-api")
 public interface KeycloakAuthClient {
@@ -93,4 +95,20 @@ public interface KeycloakAuthClient {
             @PathParam("realm") String realm,
             @PathParam("id") String userId,
             List<RoleRepresentation> roles);
+
+    @GET
+    @Path(USERS)
+    @Produces(MediaType.APPLICATION_JSON)
+    List<UserRepresentation> searchUser(
+            @HeaderParam("Authorization") String bearerToken,
+            @PathParam("realm") String realm,
+            @QueryParam("username") String username);
+
+    @GET
+    @Path(USERS)
+    @Produces(MediaType.APPLICATION_JSON)
+    List<UserRepresentation> searchUserEmail(
+            @HeaderParam("Authorization") String bearerToken,
+            @PathParam("realm") String realm,
+            @QueryParam("email") String email);
 }
