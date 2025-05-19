@@ -81,6 +81,15 @@ public interface KeycloakAuthClient {
             @FormParam("client_id") String clientId,
             @FormParam("client_secret") String clientSecret);
 
+    @POST
+    @Path(REALM + "/protocol/openid-connect/revoke")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    void revokeToken(
+            @PathParam("realm") String realm,
+            @FormParam("token") String token,
+            @FormParam("client_id") String clientId,
+            @FormParam("client_secret") String clientSecret);
+
     @GET
     @Path(ROLES + "/{role-name}")
     @Produces(MediaType.APPLICATION_JSON)

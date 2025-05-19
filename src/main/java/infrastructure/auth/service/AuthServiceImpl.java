@@ -85,6 +85,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public void revokeAccessToken(String accessToken) {
+        keycloakAuthClient.revokeToken(
+                realm,
+                accessToken,
+                clientId,
+                clientSecret);
+    }
+
+    @Override
     public void assignRealmRoles(String userId, List<String> rolesNames) {
         String bearer = "Bearer " + getAdminAccessToken();
         // 1) Obter RoleRepresentation de cada nome

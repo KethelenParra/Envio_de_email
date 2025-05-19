@@ -15,8 +15,10 @@ public class LogoutUseCase {
         this.authService = authService;
     }
 
-    public void execute(AuthLogoutDTO dto) {
+    public void execute(String accessToken, AuthLogoutDTO dto) {
         authService.logout(dto);
+
+        authService.revokeAccessToken(accessToken);
     }
 
 }

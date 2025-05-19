@@ -24,6 +24,8 @@ public interface AuthService {
 
     void logout(AuthLogoutDTO dto);
 
+    void revokeAccessToken(String accessToken);
+
     void assignRealmRoles(String userId, List<String> roles);
 
     String findKeycloakIdByUsername(String username);
