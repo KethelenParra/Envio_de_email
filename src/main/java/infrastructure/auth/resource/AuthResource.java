@@ -16,10 +16,11 @@ import infrastructure.auth.dto.AuthLogoutDTO;
 import infrastructure.auth.dto.TokenResponseDTO;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
@@ -66,21 +67,28 @@ public class AuthResource {
     @POST
     @Path("/logout")
     public Response logout(
-            @HeaderParam("Authorization") String authHeader,
+            @CookieParam("jwt_token") Cookie jwtCookie,
             AuthLogoutDTO dto) {
-        String accessToken = authHeader.substring("Bearer ".length());
-        logoutUseCase.execute(accessToken, dto);
 
-        // remove o cookie imediatamente
+        if (jwtCookie == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\":\"jwt_token cookie not found\"}")
+                    .build();
+        }
+
+        // cookie.value() já é o access token puro
+        String accessToken = jwtCookie.getValue();
+
+        logoutUseCase.execute(accessToken, dto);
         NewCookie clear = new NewCookie(
-                "jwt_token", // nome
-                "", // valor vazio
-                "/", // path
-                null, // domain
-                null, // comment
-                0, // maxAge=0 (expira já)
-                true, // secure em HTTPS
-                true // httpOnly
+                "jwt_token", // name
+                "", // value vazio
+                "/", // path igual
+                null, // domain igual
+                null, // comentário (pode ser null)
+                0, // maxAge=0 para expirar imediatamente
+                false, // secure = false
+                false // httpOnly = false
         );
         return Response.noContent()
                 .cookie(clear)
